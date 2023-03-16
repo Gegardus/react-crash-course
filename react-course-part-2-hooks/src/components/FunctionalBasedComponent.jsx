@@ -1,29 +1,86 @@
-import React from 'react';
-import PropExample from '../PropExample/index'
-import NewPropExample from '../PropExample/child'
+import React, { useContext, useEffect, useReducer, useRef, useState } from 'react';
+import { Context } from '../App'
 
-const Child = () => {
-    return <p>Child functional component.</p>    
+// for  useReducer
+const initialState = {
+  flag : false
 }
 
-const parentComponentHandler = () => {
-    console.log('Hi, from parent!');
-}
-
-// gets data from child
-const getValueFromChildComponent = (value) => {
-  console.log(value);
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'TOGGLE_BUTTON' :
+      console.log(state, action);
+      return {
+        ...state,
+        flag : !state.flag
+      }
+    default : 
+      return state  
+  };
 }
 
 function FunctionalBasedComponent() {
-    return(
-        <div>
-            <p>This is Functional Based component</p>
-            <Child />            
-            <PropExample parentComponentHandler = {parentComponentHandler} flag = {true} data = "data as props passed to child from parent" />
-            <NewPropExample getValueFromChildComponent = {getValueFromChildComponent} /> 
-        </div>       
-    )
+  // useState  
+  const [count, setCount] = useState(0) // count - initial state, setCount - dispatch function, that updates state
+  const [flag, setFlag] = useState(false) 
+  console.log(count);
+
+  const handleClick = () => {
+  setCount(count + 1)
+  }
+
+  // useEffect
+  useEffect(() => {
+    console.log('With empty dependency array useEffect is called only one on page load.');
+  }, []) // like componentdidmount for class component
+
+  useEffect(() => {
+    if(count === 5) {
+        setFlag(true);
+    }
+  }, [count]) // like componentdidupdate for class component
+
+  useEffect(() => {
+    console.log('This function has cleaning effect.');
+  }) // like componentwillunmount for class component
+
+  // useContext
+  const getValueFromContext = useContext(Context)
+  console.log(getValueFromContext);
+
+  // useReducer as useState for snippet of code
+  const [state, dispatch] = useReducer(reducer, initialState)
+  console.log(state);
+
+  // useRef to see input
+  const inputRef = useRef(null)
+  console.log(inputRef);
+
+  useEffect(() => {
+    inputRef.current.focus()
+  }, [count]) 
+
+  // const handleFocus = () => {
+  //   inputRef.current.focus()
+  // }
+    
+  return(
+    <div>
+      <button onClick={handleClick}>Increase Count</button> 
+      <br />   
+       Count value is {count}
+       {
+        flag && <p>Hello everyone from useEffect</p>
+       }
+       <br />
+       <button style={{ backgroundColor : getValueFromContext }}>Click for Context</button>
+       <br />
+       <button onClick={() => dispatch({type : 'TOGGLE_BUTTON'})}>Toggle Reducer</button>
+       <br />
+       <input ref={inputRef} name='name' placeholder='Name' type='text' /> 
+       {/* <button onClick={handleFocus}>Click for Ref</button> */}
+    </div>       
+  )
 }
 
 export default FunctionalBasedComponent;

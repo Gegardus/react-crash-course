@@ -1,13 +1,17 @@
+import { createContext } from 'react';
 import './App.css';
-import ClassBasedComponent from './components/ClassBasedComponent'
 import FunctionalBasedComponent from './components/FunctionalBasedComponent';
+
+export const Context = createContext('light')
+console.log(Context);
 
 function App() {
   return (
-    <div className="App">
-      <ClassBasedComponent />
+    <Context.Provider value="lightblue">
+    <div className="App">    
       <FunctionalBasedComponent />
     </div>
+    </Context.Provider>
   );
 }
 
